@@ -57,7 +57,8 @@ import multiprocessing
 from wettbewerb import load_references
 from ecg_classification import *
 
-num_workers = min(4, multiprocessing.cpu_count()) if torch.cuda.is_available() else 2
+num_workers = min(20, min(4, multiprocessing.cpu_count()) if torch.cuda.is_available() else 2)
+
 
 if __name__ == '__main__':
     # Add dataset info
