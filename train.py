@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 import os
+import torch
 
 # Manage command line arguments
 parser = ArgumentParser()
@@ -42,7 +43,7 @@ parser.add_argument("--two_classes", default=False, action="store_true",
 args = parser.parse_args()
 
 # Set device type
-device = "cuda"
+device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Set cuda devices
 os.environ["CUDA_VISIBLE_DEVICES"] = args.cuda_devices
@@ -51,8 +52,12 @@ import torch
 import torch_optimizer
 from torch.utils.data import DataLoader
 
+import multiprocessing
+
 from wettbewerb import load_references
 from ecg_classification import *
+
+num_workers = min(4, multiprocessing.cpu_count()) if torch.cuda.is_available() else 2
 
 if __name__ == '__main__':
     # Add dataset info
@@ -169,12 +174,14 @@ if __name__ == '__main__':
     if args.icentia11k:
         training_dataset = DataLoader(
             Icentia11kDataset(path=args.dataset_path, split=TRAINING_SPLIT_ICENTIA11K),
-            batch_size=max(1, args.batch_size // 50), num_workers=min(max(args.batch_size // 50, 4), 20),
+            batch_size=max(1, args.batch_size // 50), #num_workers=min(max(args.batch_size // 50, 4), 20)
+            num_workers=num_workers,
             pin_memory=True, drop_last=False, shuffle=True, collate_fn=icentia11k_dataset_collate_fn)
         validation_dataset = DataLoader(
             Icentia11kDataset(path=args.dataset_path, split=VALIDATION_SPLIT_ICENTIA11K,
                               random_seed=VALIDATION_SEED_ICENTIA11K),
-            batch_size=max(1, args.batch_size // 50), num_workers=min(max(args.batch_size // 50, 4), 20),
+            batch_size=max(1, args.batch_size // 50), #num_workers=min(max(args.batch_size // 50, 4), 20)
+            num_workers=num_workers,
             pin_memory=True, drop_last=False, shuffle=False, collate_fn=icentia11k_dataset_collate_fn)
     else:
         ecg_leads, ecg_labels, fs, ecg_names = load_references(args.dataset_path)
@@ -199,14 +206,16 @@ if __name__ == '__main__':
                              augmentation_pipeline=None if args.no_data_aug else AugmentationPipeline(
                                  AUGMENTATION_PIPELINE_CONFIG),
                              two_classes=args.two_classes),
-            batch_size=args.batch_size, num_workers=min(args.batch_size, 20), pin_memory=True,
+            batch_size=args.batch_size, #num_workers=min(args.batch_size, 20)
+            num_workers=num_workers  , pin_memory=True,
             drop_last=False, shuffle=True)
         validation_dataset = DataLoader(
             PhysioNetDataset(ecg_leads=[ecg_leads[index] for index in validation_split],
                              ecg_labels=[ecg_labels[index] for index in validation_split], fs=fs,
                              augmentation_pipeline=None,
                              two_classes=args.two_classes),
-            batch_size=args.batch_size, num_workers=min(args.batch_size, 20), pin_memory=True,
+            batch_size=args.batch_size, #num_workers=min(args.batch_size, 20)
+            num_workers=num_workers , pin_memory=True,
             drop_last=False, shuffle=False)
 
     # Make loss weights

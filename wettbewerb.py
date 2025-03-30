@@ -14,7 +14,7 @@ import os
 
 ### Achtung! Diese Funktion nicht veraendern.
 
-def load_references(folder: str = '../training') -> Tuple[List[np.ndarray], List[str], int, List[str]]:
+def load_references(folder: str = r"C:\Users\Notebook\Downloads\data_ECG\data\training") -> Tuple[List[np.ndarray], List[str], int, List[str]]:
     """
     Parameters
     ----------

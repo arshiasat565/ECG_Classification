@@ -24,7 +24,7 @@ class ModelWrapper(object):
                  validation_dataset: DataLoader,
                  data_logger: Logger,
                  learning_rate_schedule: Optional[torch.optim.lr_scheduler.CosineAnnealingLR] = None,
-                 device: str = "cuda") -> None:
+                 device: str = "cuda" if torch.cuda.is_available() else "cpu") -> None:
         """
         Constructor method
         :param network: (Union[nn.Module, nn.DataParallel]) Network to be trained

@@ -7,11 +7,11 @@ def score():
     if not os.path.exists("PREDICTIONS.csv"):
         sys.exit("Es gibt keine Predictions")
 
-    if not os.path.exists("../test/REFERENCE.csv"):
+    if not os.path.exists(r"C:\Users\Notebook\Downloads\ECG_Classification-main\data\training\REFERENCE.csv"):
         sys.exit("Es gibt keine Ground Truth")
 
     df_pred = pd.read_csv("PREDICTIONS.csv", header=None)  # Klassifikationen
-    df_gt = pd.read_csv("../test/REFERENCE.csv", header=None)  # Wahrheit
+    df_gt = pd.read_csv(r"C:\Users\Notebook\Downloads\ECG_Classification-main\data\training\REFERENCE.csv", header=None)  # Wahrheit
 
     N_files = df_gt.shape[0]  # Anzahl an Datenpunkten
 

@@ -10,7 +10,7 @@ from wettbewerb import load_references, save_predictions
 
 if __name__ == '__main__':
     ecg_leads, ecg_labels, fs, ecg_names = load_references(
-        '../test/')  # Importiere EKG-Dateien, zugehörige Diagnose, Sampling-Frequenz (Hz) und Name                                                # Sampling-Frequenz 300 Hz
+        r"C:\Users\Notebook\Downloads\ECG_Classification-main\data\training")  # Importiere EKG-Dateien, zugehörige Diagnose, Sampling-Frequenz (Hz) und Name                                                # Sampling-Frequenz 300 Hz
 
     predictions = predict_labels(ecg_leads, fs, ecg_names, use_pretrained=True)
 
